@@ -1,14 +1,16 @@
-import { Component, Input } from '@angular/core';
-import { type Investment } from './investment-input.model';
-import { CurrencyPipe } from '@angular/common';
+import { Component, computed, inject } from '@angular/core';
+import { InvestmentService } from './investment-results.sevice';
 
 @Component({
   selector: 'app-investment-results',
-  standalone: true,
-  imports: [CurrencyPipe],
   templateUrl: './investment-results.component.html',
   styleUrl: './investment-results.component.css'
 })
 export class InvestmentResultsComponent {
-@Input() results?:Investment[]
+  // results = input<Investment[]>()
+// @Input() results?:Investment[]
+
+private invService = inject(InvestmentService)
+results = computed(() => this.invService.getInvestements())
+
 }

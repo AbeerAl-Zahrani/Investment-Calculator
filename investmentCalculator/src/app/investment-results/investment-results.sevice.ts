@@ -1,19 +1,34 @@
-import { calculateInvestmentResults } from '../../investment-results'
-import {type InvestmentInput} from './investment-input.model'
+import { computed, Injectable, signal } from '@angular/core'
+import type {Investment,  InvestmentInput} from './investment-input.model'
+
+@Injectable({providedIn:"root"})
 export class InvestmentService{
-//  investements!:Array<T>
+ investements = signal<Investment[] | undefined> (undefined)
     
-constructor(){
+ calculateInvestmentResults(data:InvestmentInput) {
+    const {initialInvestment,duration,expectedReturn,annualInvestment} = data
+      const annualData = [];
+      let investmentValue = initialInvestment;
     
-}
-    addInv(InvData:InvestmentInput){
-          calculateInvestmentResults(InvData.initialInvestment,InvData.duration,InvData.expectedReturn,InvData.annualInvestment)
-        // console.log(this.investements);
-        
+      for (let i = 0; i < duration; i++) {
+        const year = i + 1;
+        const interestEarnedInYear = investmentValue * (expectedReturn / 100);
+        investmentValue += interestEarnedInYear + annualInvestment;
+        const totalInterest =
+          investmentValue - annualInvestment * year - initialInvestment;
+        annualData.push({
+          year: year,
+          interest: interestEarnedInYear,
+          valueEndOfYear: investmentValue,
+          annualInvestment: annualInvestment,
+          totalInterest: totalInterest,
+          totalAmountInvested: initialInvestment + annualInvestment * year,
+        });
+      }
+      this.investements.set(annualData)
+  
+   
       
-      
-}
-getInvestements(){
-    // return this.investements
-}
+    }
+getInvestements = computed(() =>  this.investements())
     }
